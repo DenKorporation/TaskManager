@@ -1,0 +1,6 @@
+﻿services:
+  taskmanager.webapi:
+    image: taskmanager.webapi
+    build:
+      context: .
+      dockerfile: hosts/TaskManager.WebApi/Dockerfile
