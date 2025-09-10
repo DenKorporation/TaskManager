@@ -30,8 +30,9 @@ jobs:
         run: |
           echo "Finding test projects..."
           TEST_PROJECTS=$(find server/tests -name '*.csproj')
-          echo "Found projects: $TEST_PROJECTS"
-          echo "projects=$TEST_PROJECTS" >> $GITHUB_OUTPUT
+          echo "Found projects:"
+          echo "$TEST_PROJECTS"
+          printf "projects<<EOF\n%s\nEOF\n" "$TEST_PROJECTS" >> $GITHUB_OUTPUT
 
       - name: Run tests with coverage
         run: |
