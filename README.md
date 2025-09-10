@@ -1,0 +1,2 @@
+![Build](https://github.com/DenKorporation/TaskManager/actions/workflows/dotnet-build.yml/badge.svg)
+[![codecov](https://codecov.io/github/DenKorporation/TaskManager/graph/badge.svg?token=HSQ5EE0OH0)](https://codecov.io/github/DenKorporation/TaskManager)
