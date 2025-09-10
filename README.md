@@ -1,2 +1,3 @@
 ![Build](https://github.com/DenKorporation/TaskManager/actions/workflows/dotnet-build.yml/badge.svg)
 [![codecov](https://codecov.io/github/DenKorporation/TaskManager/graph/badge.svg?token=HSQ5EE0OH0)](https://codecov.io/github/DenKorporation/TaskManager)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=denkorporation_taskmanager&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=denkorporation_taskmanager)
