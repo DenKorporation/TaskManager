@@ -1,4 +1,4 @@
-name: .NET Build & Test
+name: .NET Build & Test with Coverage
 
 on:
   push:
@@ -22,24 +22,43 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore server/TaskManager.sln
 
-      - name: Build
+      - name: Build solution
         run: dotnet build server/TaskManager.sln --configuration Release --no-restore
 
+      - name: Find test projects
+        id: find-tests
+        run: |
+          echo "Finding test projects..."
+          TEST_PROJECTS=$(find server/tests -name '*.csproj')
+          echo "Found projects: $TEST_PROJECTS"
+          echo "projects=$TEST_PROJECTS" >> $GITHUB_OUTPUT
+
       - name: Run tests with coverage
-        run: dotnet test server/TaskManager.sln --configuration Release --no-build --verbosity normal \
-          /p:CollectCoverage=true \
-          /p:CoverletOutput=TestResults/ \
-          /p:CoverletOutputFormat=cobertura
+        run: |
+          mkdir -p TestResults
+          for proj in ${{ steps.find-tests.outputs.projects }}
+          do
+            echo "Running tests for $proj"
+            dotnet test "$proj" --configuration Release --no-build \
+              /p:CollectCoverage=true \
+              /p:CoverletOutput=TestResults/$(basename $proj .csproj).xml \
+              /p:CoverletOutputFormat=cobertura
+          done
+
+      - name: Merge coverage reports
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator -reports:"TestResults/*.xml" -targetdir:"TestResults/Report" -reporttypes:HtmlSummary,Cobertura
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: '**/TestResults/coverage.cobertura.xml'
+          path: TestResults/Report
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: '**/TestResults/coverage.cobertura.xml'
+          files: TestResults/*.xml
           fail_ci_if_error: true
