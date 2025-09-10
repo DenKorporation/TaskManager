@@ -20,7 +20,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore TaskManager.sln
+        run: dotnet restore server/TaskManager.sln
 
       - name: Build
-        run: dotnet build TaskManager.sln --configuration Release --no-restore
+        run: dotnet build server/TaskManager.sln --configuration Release --no-restore
