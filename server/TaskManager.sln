@@ -36,6 +36,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.FunctionalTests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.AcceptanceTests", "tests\TaskManager\WebApi.AcceptanceTests\WebApi.AcceptanceTests.csproj", "{5E59A89A-A43D-49C0-AD02-6426C73FF887}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{A33DBC4B-9245-455D-A035-7D8B40CDCC12}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\dotnet-build.yml = ..\.github\workflows\dotnet-build.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
