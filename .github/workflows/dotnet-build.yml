@@ -1,4 +1,4 @@
-name: .NET Build & Test with Coverage
+name: .NET Build, Test, Coverage & SonarCloud
 
 on:
   push:
@@ -21,6 +21,16 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore server/TaskManager.sln
+
+      # ---------- SonarCloud Begin ----------
+      - name: Begin SonarCloud analysis
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          dotnet sonarscanner begin \
+            /k:"denkorporation_taskmanager" \
+            /o:"denkorporation" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="TestResults/*/coverage.cobertura.xml"
 
       - name: Build solution
         run: dotnet build server/TaskManager.sln --configuration Release --no-restore
@@ -64,5 +74,10 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: TestResults/*.xml
+          files: TestResults/Report/*.xml
           fail_ci_if_error: false
+
+      # ---------- SonarCloud End ----------
+      - name: End SonarCloud analysis
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      # --------------------------------------
