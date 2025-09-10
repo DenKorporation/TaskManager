@@ -36,7 +36,7 @@ jobs:
             echo "Running tests for $proj"
             dotnet test "$proj" --configuration Release --no-build \
               /p:CollectCoverage=true \
-              /p:CoverletOutput=TestResults/$(basename $proj .csproj).xml \
+              /p:CoverletOutput="$PWD/TestResults/$(basename $proj)/" \
               /p:CoverletOutputFormat=cobertura
           done
 
@@ -44,10 +44,10 @@ jobs:
         run: |
           ls -R TestResults
 
-          if compgen -G "TestResults/*.xml" > /dev/null; then
+          if compgen -G "TestResults/*/coverage.cobertura.xml" > /dev/null; then
             echo "Generating coverage report..."
             dotnet tool install --global dotnet-reportgenerator-globaltool
-            reportgenerator -reports:"TestResults/*.xml" -targetdir:"TestResults/Report" -reporttypes:HtmlSummary,Cobertura
+            reportgenerator -reports:"TestResults/*/coverage.cobertura.xml" -targetdir:"TestResults/Report" -reporttypes:HtmlSummary,Cobertura
           else
             echo "No coverage reports found, skipping report generation."
           fi
