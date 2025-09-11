@@ -39,7 +39,7 @@ jobs:
 
       - name: Set Docker tags
         env:
-          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
           echo "Building Docker tags for branch $GITHUB_REF_NAME"
           
@@ -47,7 +47,7 @@ jobs:
           SHA=${GITHUB_SHA::7}
           BRANCH=${GITHUB_REF_NAME}
 
-          DOCKER_USER="$docker-username"
+          DOCKER_USER="$docker_username"
           TAGS="$DOCKER_USER/taskmanager.webapi:$SHA"
           
           if [ "$BRANCH" = "main" ]; then
