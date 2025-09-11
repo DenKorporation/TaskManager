@@ -24,6 +24,7 @@ jobs:
 
       # ---------- SonarCloud Begin ----------
       - name: Begin SonarCloud analysis
+        if: github.ref_name == 'main'
         run: |
           dotnet tool install --global dotnet-sonarscanner
           dotnet sonarscanner begin \
@@ -36,6 +37,7 @@ jobs:
         run: dotnet build server/TaskManager.sln --configuration Release --no-restore
 
       - name: Run tests with coverage
+        if: github.ref_name == 'main'
         run: |
           mkdir -p TestResults
 
@@ -51,9 +53,8 @@ jobs:
           done
 
       - name: Generate coverage report
+        if: github.ref_name == 'main'
         run: |
-          ls -R TestResults
-
           if compgen -G "TestResults/*/coverage.cobertura.xml" > /dev/null; then
             echo "Generating coverage report..."
             dotnet tool install --global dotnet-reportgenerator-globaltool
@@ -63,23 +64,22 @@ jobs:
           fi
 
       - name: Upload coverage report
-        if: always()
+        if: github.ref_name == 'main'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: TestResults/Report
 
       - name: Upload coverage to Codecov
-        if: always()
+        if: github.ref_name == 'main'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: TestResults/Report/*.xml
           fail_ci_if_error: false
-          branch: ${{ github.head_ref || github.ref_name }}
-          commit_parent: ${{ github.sha }}
 
       # ---------- SonarCloud End ----------
       - name: End SonarCloud analysis
+        if: github.ref_name == 'main'
         run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       # --------------------------------------

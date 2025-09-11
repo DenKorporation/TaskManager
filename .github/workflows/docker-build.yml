@@ -1,6 +1,11 @@
 name: Docker Build & Push
 
 on:
+  workflow_run:
+    workflows: [".NET Build, Test, Coverage & SonarCloud"]
+    branches: ['main', 'develop']
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
@@ -32,12 +37,33 @@ jobs:
             echo "TAG=${GITHUB_REF_NAME}" >> $GITHUB_ENV
           fi
 
+      - name: Set Docker tags
+        run: |
+          echo "Building Docker tags for branch $GITHUB_REF_NAME"
+          
+          TAG=${TAG:-dev}
+          SHA=${GITHUB_SHA::7}
+          BRANCH=${GITHUB_REF_NAME}
+          
+          DOCKER_USER=${{ secrets.DOCKERHUB_USERNAME }}
+          TAGS="$DOCKER_USER/taskmanager.webapi:$SHA"
+          
+          if [ "$BRANCH" = "main" ]; then
+            TAGS="$DOCKER_USER/taskmanager.webapi:$TAG,$TAGS,$DOCKER_USER/taskmanager.webapi:latest"
+          elif [ "$BRANCH" = "develop" ]; then
+            TAGS="$DOCKER_USER/taskmanager.webapi:$TAG,$TAGS,$DOCKER_USER/taskmanager.webapi:develop"
+          else
+            SAFE_BRANCH=$(echo $BRANCH | tr '/' '-')
+            TAGS="$DOCKER_USER/taskmanager.webapi:$TAG,$TAGS,$DOCKER_USER/taskmanager.webapi:$SAFE_BRANCH"
+          fi
+          
+          echo "TAGS=$TAGS" >> $GITHUB_ENV
+          echo "Docker tags: $TAGS"
+      
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./server/hosts/TaskManager.WebApi/Dockerfile
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager.webapi:${{ env.TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager.webapi:${{ github.sha }}${{ env.LATEST && '\n' }}${{ secrets.DOCKERHUB_USERNAME }}/taskmanager.webapi:${{ env.LATEST }}
+          tags: ${{ env.TAGS }}
