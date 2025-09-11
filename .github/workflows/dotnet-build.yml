@@ -76,6 +76,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: TestResults/Report/*.xml
           fail_ci_if_error: false
+          branch: ${{ github.head_ref || github.ref_name }}
+          commit_parent: ${{ github.sha }}
 
       # ---------- SonarCloud End ----------
       - name: End SonarCloud analysis
