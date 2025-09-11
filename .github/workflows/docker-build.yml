@@ -38,14 +38,16 @@ jobs:
           fi
 
       - name: Set Docker tags
+        env:
+          docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
           echo "Building Docker tags for branch $GITHUB_REF_NAME"
           
           TAG=${TAG:-dev}
           SHA=${GITHUB_SHA::7}
           BRANCH=${GITHUB_REF_NAME}
-          
-          DOCKER_USER=${{ secrets.DOCKERHUB_USERNAME }}
+
+          DOCKER_USER="$docker-username"
           TAGS="$DOCKER_USER/taskmanager.webapi:$SHA"
           
           if [ "$BRANCH" = "main" ]; then
@@ -63,7 +65,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./server/hosts/TaskManager.WebApi/Dockerfile
+          context: ./server
+          file: ./hosts/TaskManager.WebApi/Dockerfile
           push: true
           tags: ${{ env.TAGS }}
