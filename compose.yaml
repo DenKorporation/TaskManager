@@ -1,6 +1,6 @@
 ﻿services:
-  taskmanager.webapi:
-    image: taskmanager.webapi
+  taskmanager.api:
+    image: taskmanager.api
     build:
       context: .
       dockerfile: hosts/TaskManager.WebApi/Dockerfile
@@ -12,3 +12,17 @@
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_HTTPS_PORTS=443
       - ASPNETCORE_HTTP_PORTS=80
+        
+  taskmanager.db:
+    image: postgres:16
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - .containers/taskmanager.db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=taskmanager.db
+      - POSTGRES_USER=${taskmanager_db_user}
+      - POSTGRES_PASSWORD=${taskmanager_db_password}
+
+#TODO добавить Keycloak

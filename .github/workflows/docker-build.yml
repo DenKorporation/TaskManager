@@ -1,5 +1,7 @@
 name: Docker Build & Push
 
+#TODO запускается вне конкретной ветки
+#TODO разобраться с тегами
 on:
   workflow_run:
     workflows: [".NET Build, Test, Coverage & SonarCloud"]
@@ -48,15 +50,15 @@ jobs:
           BRANCH=${GITHUB_REF_NAME}
 
           DOCKER_USER="$docker_username"
-          TAGS="$DOCKER_USER/taskmanager.webapi:$SHA"
+          TAGS="$DOCKER_USER/taskmanager.api:$SHA"
           
           if [ "$BRANCH" = "main" ]; then
-            TAGS="$DOCKER_USER/taskmanager.webapi:$TAG,$TAGS,$DOCKER_USER/taskmanager.webapi:latest"
+            TAGS="$DOCKER_USER/taskmanager.api:$TAG,$TAGS,$DOCKER_USER/taskmanager.api:latest"
           elif [ "$BRANCH" = "develop" ]; then
-            TAGS="$DOCKER_USER/taskmanager.webapi:$TAG,$TAGS,$DOCKER_USER/taskmanager.webapi:develop"
+            TAGS="$DOCKER_USER/taskmanager.api:$TAG,$TAGS,$DOCKER_USER/taskmanager.api:develop"
           else
             SAFE_BRANCH=$(echo $BRANCH | tr '/' '-')
-            TAGS="$DOCKER_USER/taskmanager.webapi:$TAG,$TAGS,$DOCKER_USER/taskmanager.webapi:$SAFE_BRANCH"
+            TAGS="$DOCKER_USER/taskmanager.api:$TAG,$TAGS,$DOCKER_USER/taskmanager.api:$SAFE_BRANCH"
           fi
           
           echo "TAGS=$TAGS" >> $GITHUB_ENV
